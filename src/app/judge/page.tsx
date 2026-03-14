@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Submission } from '@/lib/supabase'
 
 type Filter = 'all' | 'finalist' | 'pending'
 type Sort   = 'newest' | 'oldest' | 'name'
 
-export default function JudgePage() {
+function JudgePanel() {
   const params    = useSearchParams()
   const judgeKey  = params.get('key') ?? ''
 
@@ -305,4 +305,13 @@ const cs: Record<string, React.CSSProperties> = {
   btn:          { fontFamily:'sans-serif', fontSize:9, fontWeight:500, letterSpacing:'0.12em', textTransform:'uppercase', padding:'5px 8px', cursor:'pointer', borderRadius:1, border:'0.5px solid' },
   btnAdd:       { borderColor:'rgba(192,160,98,0.35)', color:'rgba(192,160,98,0.6)', background:'transparent' },
   btnRemove:    { borderColor:'rgba(100,200,130,0.35)', color:'rgba(100,200,130,0.7)', background:'rgba(100,200,130,0.05)' },
+}
+
+// Wrap in Suspense — required by Next.js 14 for useSearchParams()
+export default function JudgePage() {
+  return (
+    <Suspense fallback={<div style={{ background:'#0a0a0f', minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', color:'rgba(232,223,200,0.3)', fontFamily:'sans-serif' }}>Loading...</div>}>
+      <JudgePanel />
+    </Suspense>
+  )
 }
